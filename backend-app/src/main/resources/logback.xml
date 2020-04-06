@@ -3,11 +3,11 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="com.newrelic.logging.logback.NewRelicEncoder"/>
     </appender>
+    <!-- STDOUTのappenderをASYNCでwrapする -->
     <appender name="ASYNC" class="com.newrelic.logging.logback.NewRelicAsyncAppender">
         <appender-ref ref="STDOUT" />
     </appender>
     <root level="info">
         <appender-ref ref="ASYNC" />
-        <appender-ref ref="STDOUT" />
     </root>
 </configuration>
