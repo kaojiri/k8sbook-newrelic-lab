@@ -1,0 +1,65 @@
+plugins {
+	id 'org.springframework.boot' version '2.1.4.RELEASE'
+	id 'java'
+	id "de.undercouch.download" version "3.4.3"
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'k8sbook'
+version = '0.3.0'
+sourceCompatibility = '11'
+
+task downloadNewrelic(type: Download) {
+    mkdir 'newrelic'
+    src 'https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip'
+    dest file('newrelic')
+}
+
+task unzipNewrelic(type: Copy) {
+    from zipTree(file('newrelic/newrelic-java.zip'))
+    into rootDir
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set('springCloudVersion', "Greenwich.SR1")
+}
+
+test {
+	useJUnit {
+		excludeCategories('k8sbook.backend.annotation.DbRequired')
+	}
+	environment "DB_URL", "jdbc:postgresql://localhost/dummydb"
+	environment "DB_USERNAME", "dummyuser"
+	environment "DB_PASSWORD", "dummypassword"
+}
+
+task testWithDatabase(type: Test, dependsOn: testClasses) {
+}
+
+dependencies {
+	compile fileTree(dir: 'newrelic', include: '*.jar') // for use newrelic agent.
+	compile("com.newrelic.logging:logback:1.1") // for New Relic Logs
+	compile('org.springframework.boot:spring-boot-starter-thymeleaf')  // For Thymeleaf
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+	runtimeOnly 'org.postgresql:postgresql'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'com.ninja-squad:DbSetup:2.1.0'
+	testImplementation group: 'org.assertj', name: 'assertj-db', version: '1.2.0'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}")
+	}
+}
+
+bootJar {
+	launchScript()
+}

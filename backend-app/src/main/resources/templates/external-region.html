@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
+<!-- bootstrap.-->
+<title>Srpingboot Sample App</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<title>external-region</title>
+<style>
+h1 {font-size: 2rem; border-bottom: solid 3px #4caf93;}
+h2 {font-size: 1.6rem; border-bottom: solid 1px #4caf93;}
+p {padding-left: 30px;}
+table {padding-left: 30px; border-spacing: 0;}
+table th {background-color: rgba(76, 175, 147, 0.175);}
+table th, td {padding: 5px;}
+</style>
+<!-- For New Relic Browser agent.-->
+<div th:remove="tag" th:utext="${T(com.newrelic.api.agent.NewRelic).getBrowserTimingHeader()}"></div>
+</head>
+<body>
+	<h1>External region page.</h1>
+	<p th:text="${statusCode}"></p>
+	<p th:text="${responseBody}"></p>
+
+	<button type="button" class="btn btn-primary" onclick="window.location.href = '/';">Back</button>
+	
+	<!-- Add Custom Attribute to New Relic. -->
+	<script type="text/javascript">
+		newrelic.setCustomAttribute('custom-attr-from-browser', 'This is test from browser');
+	</script>
+
+<!-- For New Relic Browser agent.-->
+<div th:utext="${T(com.newrelic.api.agent.NewRelic).getBrowserTimingFooter()}"></div>
+</body>
+</html>
